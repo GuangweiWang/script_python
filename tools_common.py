@@ -3,10 +3,26 @@
 import re
 import subprocess
 import config
-#TODO:
+
+
+PSNR_TOOL_EXE_PATH = config.TOOLS_PATH
+
 
 def get_resolution_from_file_name(f):
-    'get sequence resolution from file name, do not parse the file content'
+    '''
+    this function uses to get resolution from file name, do not parse the file content.
+
+    usage:
+        get_resolution_from_file_name(filename)
+
+    parameters:
+        file_name       the file name
+
+    return:
+        width           the width of sequence
+        height          the height of sequence
+        frame_rate      the frame rate of sequence, default equals 30
+    '''
 
     resolution_re = re.compile(r'(\d+)x(\d+)_(\d+)')
     r = resolution_re.search(f)
@@ -27,8 +43,27 @@ def get_resolution_from_file_name(f):
 
 
 def calculate_PSNR_staticd(width, height, original, rec, output_name=None, bs_name=None, frame_rate=None):
-    psnr_path = config.TOOLS_PATH
+    '''
+    this function uses to calculate psnr of two yuv sequences
 
+    usage:
+        calculate_PSNR_staticd(width, height, original_yuv, rec_yuv)
+
+    parameters:
+        width           the width of this two sequences
+        height          the height of this two sequences
+        original_yuv    one of two sequences(or the original yuv file)
+        rec_yuv         the other yuv file(or the reconstructed yuv file)
+
+    return:(4 parameters)
+        frame_num       frame number of the input yuv
+        frame_rate      frame rate of the input yuv
+        psnr_y          psnr of Y component
+        psnr_u          psnr of U component
+        psnr_v          psnr of V component
+    '''
+
+    psnr_path = PSNR_TOOL_EXE_PATH
     if bs_name and frame_rate:
         cmdline = str('%sPSNRStaticd %d %d %s %s 0 0 %s %d Summary -r '
                     % (psnr_path, width, height, original, rec, bs_name, frame_rate))

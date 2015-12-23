@@ -58,6 +58,7 @@ if user_name == 'guangwei':
         #path for downsampler
         DOWN_CONVERT_PATH = TOOLS_PATH
         DOWN_SAMPLER_PATH = TOOLS_PATH
+        TOOLS_SCALER_SX80_PATH = TOOLS_PATH
 
         #path for codec(wels openh264)
         H264ENC_PATH = TOOLS_PATH
@@ -82,6 +83,9 @@ if user_name == 'guangwei':
         BMP_PATH_CAMERA = '/Users/guangwwa/WorkSpace/TestSequences/bmp/camera/'
         BMP_PATH_SCREEN = '/Users/guangwwa/WorkSpace/TestSequences/bmp/screen/'
         OUT_DATA_PATH = '/Users/guangwwa/WorkSpace/IOdata/'
+
+        # define global variable
+        DEBUG_MODE = False
 
     elif os_name == 'Windows':
         #if you work on Windows

@@ -7,14 +7,89 @@ import config
 import tools_common
 import tools_downsampler
 import tools_codec
-#TODO:
 
 
-#for new use
+def scaling_one_bmp(in_bmp, wout, hout, frame_type='camera'):
+    '''
+    this function use to scale one .bmp file using scalerSX80
+
+    usage:
+        scaler_one_bmp(infile.bmp, wout, hout, frame_type)
+
+    parameters:
+        infile.bmp      the input file name(.bmp format)
+        wout            the width of output file
+        hout            the height of output file
+        frame_type      optional parameter,
+                        help to save output files by type of frame content,
+                        default equals 'camera'
+    return:
+        no parameters returned, but save two scaled files in specific path
+    '''
+
+    resolution_out = '%dx%d' %(wout, hout)
+    file_name_prefix = os.path.basename(in_bmp)[0:-9]
+    file_name_suffix = os.path.basename(in_bmp)[-9:]
+
+    out_path = config.OUT_DATA_PATH + 'results' + os.sep + 'bmp' + os.sep + frame_type + os.sep \
+             + file_name_prefix + os.sep
+    if os.path.isdir(out_path):
+        pass
+    else:
+        os.makedirs(out_path)
+
+    out_file_old = out_path + file_name_prefix + '_to_' + resolution_out + '_old' + file_name_suffix
+    out_file_new = out_path + file_name_prefix + '_to_' + resolution_out + '_new' + file_name_suffix
+
+    tools_downsampler.scalerSX80(in_bmp, wout, hout, frame_type)
+
+    os.rename('out_old.bmp', out_file_old)
+    os.rename('out_new.bmp', out_file_new)
+
+
+def scaling_bmps():
+    '''
+    this function process bmps
+    '''
+
+    down_scale_list = [2, 4, 8]
+    frame_type_list = ['camera', 'screen']
+
+    src_bmp_path = config.BMP_PATH
+
+    for frame_type in frame_type_list:
+        src_sequence_path = src_bmp_path + frame_type + os.sep
+        for src_sequence in glob.glob(src_sequence_path + '*'):
+            for src_bmp in glob.glob(src_sequence + os.sep + '*.bmp'):
+                print('processing %s' %src_bmp)
+                for down_scale in down_scale_list:
+                    win, hin, frame_rate = tools_common.get_resolution_from_file_name(src_bmp)
+                    wout = win / down_scale
+                    hout = hin / down_scale
+                    tools_downsampler.scalerSX80(src_bmp, wout, hout, frame_type)
+
+
 def compare_results_from_downsamplers_and_codec(yuv_in, src_width, src_height, dst_width, dst_height,
                                          sequence_type='camera'):
-    '''compare results of sequences processed by different downsamplers->encoder->decoder
-    to DownConvert->encoder->decoder, valued by processing time, PSNR, ssim...'''
+    '''
+    compare results of sequences processed by different downsamplers->encoder->decoder
+    to DownConvert->encoder->decoder, valued by processing time, PSNR, ssim...
+
+    usage:
+        compare_results_from_downsamplers_and_codec(yuv_in, src_width, src_height, dst_width, dst_height, sequence_type)
+
+    parameters:
+        yuv_in          input yuv file to be processed(downsample + encode + decode)
+        src_width       width of input sequence
+        src_height      height of input sequence
+        dst_width       width of output sequence
+        dst_height      height of output sequence
+        sequence_type   type of input sequence content:camera/screen
+
+    return:
+        no parameters returned, but save two .csv file in specific path to save all information
+
+    '''
 
     out_path = config.OUT_DATA_PATH
 

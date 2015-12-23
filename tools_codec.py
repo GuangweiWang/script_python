@@ -3,13 +3,35 @@
 import re
 import subprocess
 import config
-#TODO:
 
-#wels H264encoder
+
+WELS_H264ENC_EXE_PATH = config.TOOLS_PATH
+WELS_H264DEC_EXE_PATH = config.TOOLS_PATH
+
+
 def wels_h264_encoder(infile, outfile, win, hin, wout, hout, qp=24, rc=-1):
-    'call welsH264 encoder'
+    '''
+    this function uses to call wels h264encoder.
 
-    encoder = config.H264ENC_PATH + 'h264enc'
+    usage:
+        wels_h264_encoder(infile.yuv, outfile.264, win, hin, wout, hout)
+
+    parameters:
+        infile.yuv      the input file to be encoded
+        outfile.264     the output file(.264 format)
+        win             width of original file
+        hin             height of original file
+        wout            width of output file
+        hout            height of output file
+
+    return:
+        frames          total frame number encoded
+        encoder_time    total encoding time
+        fps             FPS
+
+    '''
+
+    encoder = WELS_H264ENC_EXE_PATH + 'h264enc'
     encoder_cfg = config.H264CFG_PATH + 'welsenc.cfg'
     encoder_layer_cfg = config.H264CFG_PATH + 'layer2.cfg'
 
@@ -39,11 +61,22 @@ def wels_h264_encoder(infile, outfile, win, hin, wout, hout, qp=24, rc=-1):
     return frames, encoder_time, fps
 
 
-#wels H264decoder
 def wels_h264_decoder(infile, outfile):
-    'call WelsH264 decoder'
+    '''
+    this function uses to call wels h264decoder
 
-    decoder = config.H264DEC_PATH + 'h264dec'
+    usage:
+        wels_h264_decoder(infile.264, outfile.yuv)
+
+    parameters:
+        infile.264      input file to be decoded
+        outfile.yuv     output file
+
+    return:
+        decode_time     total decoding time
+    '''
+
+    decoder = WELS_H264DEC_EXE_PATH + 'h264dec'
 
     cmdline = str('%s %s %s' % (decoder, infile, outfile))
     p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
